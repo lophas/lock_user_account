@@ -24,6 +24,8 @@ class fix_Baba_User_Meta {
 		add_action( 'admin_init', array( $this, 'process_lock_action' ) );
 		add_action( 'personal_options', [$this, 'edit_user'] );
 		add_action( 'edit_user_profile_update', [$this, 'update_user']);
+        add_action('manage_users_extra_tablenav', [$this,'dropdown'], 100);
+        add_filter('pre_get_users', [$this,'pre_get_users']);
 		if(is_network_admin()) {
 			add_filter( 'wpmu_users_columns', [$instance, 'register_column_header'] );
         	add_filter( 'bulk_actions-users-network', array( $instance, 'register_bulk_action' ) );
@@ -108,5 +110,23 @@ class fix_Baba_User_Meta {
 //		update_user_meta( (int)$userid, sanitize_key( 'baba_user_locked' ), '' );
 		delete_user_meta( (int)$userid, sanitize_key( 'baba_user_locked' ) );
 	}
+    public function dropdown($which) {
+        if($which != 'top') return;
+        echo '<select name="user_lock">';
+        echo '<option value="">'.__( 'Lock User Account', 'babatechs' ).'</option>';
+        echo '<option value="yes" '.selected("yes", $_GET['user_lock']).'>'.__( 'Locked', 'babatechs' ).'</option>';
+        echo '</select>';
+    	submit_button(__( 'Filter' ), null, $which, false);
+    }
+    public function pre_get_users($query) {
+        global $pagenow;
+        if (is_admin() && 'users.php' == $pagenow) {
+            if ($_GET['user_lock'] == 'yes') {
+                $meta_query = [['key' => sanitize_key( 'baba_user_locked' ),'value' => 'yes', 'compare' => '=']];
+                $query->set('meta_key', sanitize_key( 'baba_user_locked' ));
+                $query->set('meta_query', $meta_query);
+            }
+        }
+    }
 }
 new fix_Baba_User_Meta;
