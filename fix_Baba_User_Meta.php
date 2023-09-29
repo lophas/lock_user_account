@@ -1,4 +1,13 @@
 <?php
+/*
+Author: Attila Seres
+Source: https://github.com/lophas/lock_user_account/
+- adds multisite support
+- adds profile edit support
+- adds dropdown filter
+- immediately logs out locked users
+- fixes minor issues (i.e. hardcoded referer)
+*/
 class fix_Baba_User_Meta {
 	function __construct() {
 		add_action('admin_init', [$this, 'admin_init'], 9);
