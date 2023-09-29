@@ -24,15 +24,15 @@ class fix_Baba_User_Meta {
 		add_action( 'admin_init', array( $this, 'process_lock_action' ) );
 		add_action( 'personal_options', [$this, 'edit_user'] );
 		add_action( 'edit_user_profile_update', [$this, 'update_user']);
-        add_action('manage_users_extra_tablenav', [$this,'dropdown'], 100);
-        add_filter('pre_get_users', [$this,'pre_get_users']);
+        	add_action('manage_users_extra_tablenav', [$this,'dropdown'], 100);
+        	add_filter('pre_get_users', [$this,'pre_get_users']);
 		if(is_network_admin()) {
 			add_filter( 'wpmu_users_columns', [$instance, 'register_column_header'] );
-        	add_filter( 'bulk_actions-users-network', array( $instance, 'register_bulk_action' ) );
+        		add_filter( 'bulk_actions-users-network', array( $instance, 'register_bulk_action' ) );
 		}
 	}
 	public function edit_user($profile_user) {
-        if( ! current_user_can( 'create_users' ) ) return;
+        	if( ! current_user_can( 'create_users' ) ) return;
 		if(get_current_user_id() == $profile_user->ID) return;
 		$locked = get_user_meta( (int)$profile_user->ID, sanitize_key( 'baba_user_locked' ), true );
 ?>
@@ -47,15 +47,15 @@ class fix_Baba_User_Meta {
 <?php
 	}
 	public function update_user($user_id) {
-        if( ! current_user_can( 'create_users' ) ) return;
+        	if( ! current_user_can( 'create_users' ) ) return;
 		if(get_current_user_id() == $user_id) return;
 		if($_POST['user_lock'] == 'yes') $this->lock_user($user_id);
 		else $this->unlock_user($user_id);
 	}
-    public function process_lock_action(){
-		$request = is_network_admin() ? $_POST : $_GET;
+    	public function process_lock_action(){
+	  $request = is_network_admin() ? $_POST : $_GET;
 
-		if ( isset( $request['_wpnonce'] ) && ! empty( $request['_wpnonce'] ) && (strpos(wp_get_referer(), '/wp-admin/users.php' ) === 0 || strpos(wp_get_referer(), '/wp-admin/network/users.php' ) === 0)) {
+	  if ( isset( $request['_wpnonce'] ) && ! empty( $request['_wpnonce'] ) && (strpos(wp_get_referer(), '/wp-admin/users.php' ) === 0 || strpos(wp_get_referer(), '/wp-admin/network/users.php' ) === 0)) {
             $action  = filter_input( is_network_admin() ? INPUT_POST : INPUT_GET, 'action', FILTER_SANITIZE_STRING );
             
             //  check the action is not supposed to catch
@@ -74,7 +74,7 @@ class fix_Baba_User_Meta {
             
             //  secure input for user ids
             $userids = [];
-			$users = is_network_admin() ? $request['allusers'] : $request['users'];
+	    $users = is_network_admin() ? $request['allusers'] : $request['users'];
             if( isset( $users ) && is_array( $users ) && !empty( $users ) ){
                 foreach( $users as $user_id ){
                     $userids[] = (int)$user_id;
@@ -89,18 +89,18 @@ class fix_Baba_User_Meta {
                 $current_user_id = get_current_user_id();
                 foreach( $userids as $userid ){
                     if( $userid == $current_user_id ) continue;
-					$this->lock_user($userid);
-				}
+		    $this->lock_user($userid);
+		}
             }
             
             //  Process unlock request
             elseif( 'unlock' === $action ){
                 foreach( $userids as $userid ){
-					$this->unlock_user($userid);
+		    $this->unlock_user($userid);
                 }
             }
-        }
-    }
+          }
+    	}
 	public function lock_user($userid) {
 		update_user_meta( (int)$userid, sanitize_key( 'baba_user_locked' ), 'yes' );
 		$sessions = WP_Session_Tokens::get_instance($userid);
@@ -110,23 +110,23 @@ class fix_Baba_User_Meta {
 //		update_user_meta( (int)$userid, sanitize_key( 'baba_user_locked' ), '' );
 		delete_user_meta( (int)$userid, sanitize_key( 'baba_user_locked' ) );
 	}
-    public function dropdown($which) {
-        if($which != 'top') return;
-        echo '<select name="user_lock">';
-        echo '<option value="">'.__( 'Lock User Account', 'babatechs' ).'</option>';
-        echo '<option value="yes" '.selected("yes", $_GET['user_lock']).'>'.__( 'Locked', 'babatechs' ).'</option>';
-        echo '</select>';
-    	submit_button(__( 'Filter' ), null, $which, false);
-    }
-    public function pre_get_users($query) {
-        global $pagenow;
-        if (is_admin() && 'users.php' == $pagenow) {
-            if ($_GET['user_lock'] == 'yes') {
-                $meta_query = [['key' => sanitize_key( 'baba_user_locked' ),'value' => 'yes', 'compare' => '=']];
-                $query->set('meta_key', sanitize_key( 'baba_user_locked' ));
-                $query->set('meta_query', $meta_query);
-            }
-        }
-    }
+    	public function dropdown($which) {
+        	if($which != 'top') return;
+        	echo '<select name="user_lock">';
+        	echo '<option value="">'.__( 'Lock User Account', 'babatechs' ).'</option>';
+        	echo '<option value="yes" '.selected("yes", $_GET['user_lock']).'>'.__( 'Locked', 'babatechs' ).'</option>';
+        	echo '</select>';
+    		submit_button(__( 'Filter' ), null, $which, false);
+    	}
+    	public function pre_get_users($query) {
+        	global $pagenow;
+        	if (is_admin() && 'users.php' == $pagenow) {
+           		if ($_GET['user_lock'] == 'yes') {
+                		$meta_query = [['key' => sanitize_key( 'baba_user_locked' ),'value' => 'yes', 'compare' => '=']];
+                		$query->set('meta_key', sanitize_key( 'baba_user_locked' ));
+                		$query->set('meta_query', $meta_query);
+            		}
+        	}
+    	}
 }
 new fix_Baba_User_Meta;
