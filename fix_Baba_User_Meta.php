@@ -127,7 +127,7 @@ class fix_Baba_User_Meta {
         	echo '<option value="'.esc_url(add_query_arg('user_lock', 'yes')).'" '.selected("yes", $_GET['user_lock']).'>'.__( 'Locked', 'babatechs' ).'</option>';
         	echo '</select>';
 	}
-	function network_dropdown(){
+	public function network_dropdown(){
 		echo '<div id="extra_tablenav" style="display:none">';
 		$this->dropdown();
 		echo '</div>';
