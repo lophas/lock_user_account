@@ -1,7 +1,7 @@
 Fixes and enhancements to Wordpress plugin Lock User Account By teknigar
 https://wordpress.org/plugins/lock-user-account/
 
- * Version: 1.3
+ * Version: 1.4
  * Author: Attila Seres
  * Source: https://github.com/lophas/lock_user_account/
 
