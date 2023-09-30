@@ -1,6 +1,6 @@
 <?php
 /*
- * Version: 1.2
+ * Version: 1.3
  * Author: Attila Seres
  * Source: https://github.com/lophas/lock_user_account/
 - adds multisite support
@@ -121,12 +121,10 @@ class fix_Baba_User_Meta {
 		delete_user_meta( (int)$userid, sanitize_key( 'baba_user_locked' ) );
 	}
     	public function dropdown($which) {
-        	if($which != 'top') return;
-        	echo '<select name="user_lock" onChange="window.location.href = this.value">';
+        	echo '<select onChange="window.location.href = this.value">';
         	echo '<option value="'.esc_url(remove_query_arg('user_lock')).'">'.__( 'Lock User Account', 'babatechs' ).'</option>';
         	echo '<option value="'.esc_url(add_query_arg('user_lock', 'yes')).'" '.selected("yes", $_GET['user_lock']).'>'.__( 'Locked', 'babatechs' ).'</option>';
         	echo '</select>';
-//    		submit_button(__( 'Filter' ), null, $which, false);
     	}
     	public function pre_get_users($query) {
         	global $pagenow;
@@ -140,3 +138,4 @@ class fix_Baba_User_Meta {
     	}
 }
 new fix_Baba_User_Meta;
+
