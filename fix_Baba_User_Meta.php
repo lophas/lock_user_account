@@ -1,6 +1,6 @@
 <?php
 /*
- * Version: 1.3
+ * Version: 1.4
  * Author: Attila Seres
  * Source: https://github.com/lophas/lock_user_account/
 - adds multisite support
@@ -34,11 +34,12 @@ class fix_Baba_User_Meta {
 		add_action( 'admin_init', array( $this, 'process_lock_action' ) );
 		add_action( 'personal_options', [$this, 'edit_user'] );
 		add_action( 'edit_user_profile_update', [$this, 'update_user']);
-        	add_action('manage_users_extra_tablenav', [$this,'dropdown'], 100);
-        	add_filter('pre_get_users', [$this,'pre_get_users']);
+		add_action('manage_users_extra_tablenav', [$this,'dropdown'], 100);
+		add_filter('pre_get_users', [$this,'pre_get_users']);
 		if(is_network_admin()) {
 			add_filter( 'wpmu_users_columns', [$instance, 'register_column_header'] );
-        		add_filter( 'bulk_actions-users-network', array( $instance, 'register_bulk_action' ) );
+			add_filter( 'bulk_actions-users-network', array( $instance, 'register_bulk_action' ) );
+			add_action( 'admin_footer-users.php', [$this, 'network_dropdown']);
 		}
 	}
 	public function edit_user($profile_user) {
@@ -120,13 +121,21 @@ class fix_Baba_User_Meta {
 //		update_user_meta( (int)$userid, sanitize_key( 'baba_user_locked' ), '' );
 		delete_user_meta( (int)$userid, sanitize_key( 'baba_user_locked' ) );
 	}
-    	public function dropdown($which) {
+	public function dropdown($which = '') {
         	echo '<select onChange="window.location.href = this.value">';
         	echo '<option value="'.esc_url(remove_query_arg('user_lock')).'">'.__( 'Lock User Account', 'babatechs' ).'</option>';
         	echo '<option value="'.esc_url(add_query_arg('user_lock', 'yes')).'" '.selected("yes", $_GET['user_lock']).'>'.__( 'Locked', 'babatechs' ).'</option>';
         	echo '</select>';
-    	}
-    	public function pre_get_users($query) {
+	}
+	function network_dropdown(){
+		echo '<div id="extra_tablenav" style="display:none">';
+		$this->dropdown();
+		echo '</div>';
+?><script>
+	jQuery('.bulkactions').after(jQuery('#extra_tablenav').html());
+</script><?php
+	}
+	public function pre_get_users($query) {
         	global $pagenow;
         	if (is_admin() && 'users.php' == $pagenow) {
            		if ($_GET['user_lock'] == 'yes') {
@@ -135,7 +144,7 @@ class fix_Baba_User_Meta {
                 		$query->set('meta_query', $meta_query);
             		}
         	}
-    	}
+	}
 }
 new fix_Baba_User_Meta;
 
