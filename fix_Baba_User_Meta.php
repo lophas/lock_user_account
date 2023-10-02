@@ -1,6 +1,6 @@
 <?php
 /*
- * Version: 1.4
+ * Version: 1.5
  * Author: Attila Seres
  * Source: https://github.com/lophas/lock_user_account/
 - adds multisite support
@@ -11,6 +11,7 @@
 
 Installation: Just drop this file into your /wp-content/mu-plugins/ folder
 */
+if(!class_exists('fix_Baba_User_Meta')) :
 class fix_Baba_User_Meta {
 	function __construct() {
 		add_action('admin_init', [$this, 'admin_init'], 9);
@@ -149,4 +150,5 @@ class fix_Baba_User_Meta {
 	}
 }
 new fix_Baba_User_Meta;
+endif;
 
