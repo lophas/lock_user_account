@@ -8,6 +8,8 @@
 - adds dropdown filter
 - immediately logs out locked users
 - fixes minor issues (i.e. hardcoded referer)
+
+Installation: Just drop this file into your /wp-content/mu-plugins/ folder
 */
 class fix_Baba_User_Meta {
 	function __construct() {
